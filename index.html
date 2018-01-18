@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!--<link href="/d3-geomap/css/d3.geomap.css" rel="stylesheet">-->
+    <!--<script src="/d3-geomap/vendor/d3.geomap.dependencies.min.js"></script>-->
+    <!--<script src="/d3-geomap/js/d3.geomap.min.js"></script>-->
+
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -16,6 +20,8 @@
 <body>
     <script src="./build/bundle.js"></script>
 
+    <div id="map"></div>
+
     <svg width="1000" height="1000" viewBox="0 0 1000 1000"
          xmlns="http://www.w3.org/2000/svg">
 
@@ -25,7 +31,6 @@
                 <stop offset="100%" stop-color="white"/>
             </radialGradient>
         </defs>
-
         <rect fill="url(#exampleGradient)" cx="60" cy="60" height="30" width="100"/>
     </svg>
 
