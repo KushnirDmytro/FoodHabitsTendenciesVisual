@@ -1,7 +1,6 @@
-import {Datamap} from "./node_modules/datamaps/dist/datamaps.world.min.js";
+import * as d3 from 'd3';
+import * as geomap from "d3-geo";
 import map from "./map";
-/*
-let basic = new Datamap({
-    element: document.getElementById("basic")
-});
-*/
+
+const square = d3.selectAll("rect");
+square.style("fill", "orange");
