@@ -2,21 +2,25 @@ import * as d3 from "d3";
 
 const line_height = 30;
 
-d3.csv("/data/busdata-temp.csv", (err, data) => {
-    const drivers = data.reduce ( (accum, el) => {
-        const index = accum.findIndex ( (row) => row[0].drivername  === el.drivername);
+d3.csv("/data/pca coords/1990-1992.csv", (err, data) => {
+    
+    console.log(data);
 
-        if (index >= 0) {accum [index].push(el);}
-        else {accum.push([el]);}
-
-        return accum;
-    }, []) ;
-
-    console.log(drivers);
-
-    render (drivers);
+    render(data);
+    
+    // const drivers = data.reduce ( (accum, el) => {
+    //     const index = accum.findIndex ( (row) => row[0].drivername  === el.drivername);
+    //
+    //     if (index >= 0) {accum [index].push(el);}
+    //     else {accum.push([el]);}
+    //
+    //     return accum;
+    // }, []) ;
+    //
+    // console.log(drivers);
+    //
+    // render (drivers);
 });
-
 
 
 
@@ -26,17 +30,15 @@ const render = (data) => {
         .select('svg');
 
 
-    const trials = svg
-        .selectAll(".trial")
+    const countries = svg
+        .selectAll(".country")
         .data(data);
-
-    const row = trials
-        .enter()
-        .append("g")
-        .attr("class", "trial")
-        .attr("transform", (d, i) => `translate(0, ${i*line_height})`);
-
-
+    //
+    // const row = trials
+    //     .enter()
+    //     .append("g")
+    //     .attr("class", "trial")
+    //     .attr("transform", (d, i) => `translate(0, ${i*20})`);
 
 
     const maxTrialDuration = d3.max(data
@@ -54,7 +56,7 @@ const render = (data) => {
     const getSpeedBreak = (d) => {
         let speedBreak = parseInt(d.distance) / parseInt(d.duration) * 3600 / 1000 - 60;
         return ( ((speedBreak > 0) && (speedBreak < 50)) ? speedBreak : 0);
-    }
+    };
 
     const avgSpeedsBreaks = data
         .map(singleDriverData => singleDriverData
@@ -89,32 +91,51 @@ const render = (data) => {
         .domain([0, routeTotalLength])
         .range([0, 900]);
 
+    const scaleX = d3.scaleLinear()
+        .domain([-250, 250])
+        .range([0, 900]);
 
-    row
-        .selectAll(".drive")
+    const scaleY = d3.scaleLinear()
+        .domain([-100, 100])
+        .range([0, 900]);
 
+
+    // row
+    //     .selectAll(".drive")
+    //     .data(d => d)
+    //     .enter()
+    //     .filter (d=> d.event === "drive")
+    //     .append("rect")
+    //     .attr("x", (d,i) => scaleRows(routeDistFromStart[i]))
+    //     .attr("y", -5)
+    //     .attr("width", d => scaleRows( parseInt(d.distance) ) )
+    //     .attr("height", 10)
+    //     .attr("fill", "url(#grad)")
+    //     .attr("opacity", d => speedBreaksOpacityMap(getSpeedBreak(d)));
+    //
+    //
+    // row
+    //     .selectAll(".stops")
+    //     .data(d => d)
+    //     .enter()
+    //     .filter (d=> d.event === "stop")
+    //     .append("circle")
+    //     .attr("class", "stops")
+    //     .attr("cx", (d,i) => scaleRows(routeDistFromStart[i]))
+    //     .attr("cy", 0)
+    //     .attr("r", (d) => d.duration / 10)
+    //     .attr("fill", "red");
+
+
+
+    countries
+        .selectAll(".country")
         .data(d => d)
         .enter()
-        .filter (d=> d.event === "drive")
-        .append("rect")
-        .attr("x", (d,i) => scaleRows(routeDistFromStart[i]))
-        .attr("y", -5)
-        .attr("width", d => scaleRows( parseInt(d.distance) ) )
-        .attr("height", 10)
-        .attr("fill", "url(#grad)")
-        .attr("opacity", d => speedBreaksOpacityMap(getSpeedBreak(d)));
-
-
-    row
-        .selectAll(".stops")
-        .data(d => d)
-        .enter()
-        .filter (d=> d.event === "stop")
         .append("circle")
-        .attr("class", "stops")
-        .attr("cx", (d,i) => scaleRows(routeDistFromStart[i]))
-        .attr("cy", 0)
-        .attr("r", (d) => d.duration / 10)
-        .attr("fill", "red")
+        .attr("class", "country")
+        .attr("cx", (d,i) => scaleX(parseFloat(d.X)))
+        .attr("cy", (d,i) => scaleY(parseFloat(d.Y)))
+        .attr("fill", "red");
 
-}
+};
