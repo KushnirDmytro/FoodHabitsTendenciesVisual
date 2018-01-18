@@ -12,7 +12,7 @@
   "dependencies": {
     "d3": "^4.12.2",
     "d3-geo": "^1.9.1",
-    "topojson": "^3.0.2",
+    "datamaps": "^0.5.8",
     "express-handlebars": "^3.0.0",
     "handlebars-loader": "^1.6.0",
     "handlebars.numeral": "^0.2.0",
@@ -20,7 +20,8 @@
     "jquery": "^3.2.1",
     "luxon": "0.0.20",
     "normalize.css": "^7.0.0",
-    "ramda": "^0.25.0"
+    "ramda": "^0.25.0",
+    "topojson": "^3.0.2"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.2.0",
