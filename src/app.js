@@ -3,11 +3,23 @@ import * as d3 from "d3";
 const line_height = 30;
 
 d3.csv("/data/pca coords/1990-1992.csv", (err, data) => {
-    
-    console.log(data);
+
+    //data structure tip
+    const columnKeys = data.columns;
+    console.log(columnKeys); //["country", "x", "y"]
+
+    // only firsy col data
+    let countyNames = data.map( d => d.country); // or d[columnKeys[0]]
+
+    console.log(countyNames);
 
     render(data);
-    
+
+    // console.log(data[0]);
+
+
+    // render(data);
+
     // const drivers = data.reduce ( (accum, el) => {
     //     const index = accum.findIndex ( (row) => row[0].drivername  === el.drivername);
     //
@@ -24,6 +36,7 @@ d3.csv("/data/pca coords/1990-1992.csv", (err, data) => {
 
 
 
+
 const render = (data) => {
     const svg = d3
         .select(document.body)
@@ -32,7 +45,19 @@ const render = (data) => {
 
     const countries = svg
         .selectAll(".country")
-        .data(data);
+        .data(data)
+        .enter()
+        .append('g')
+        .attr("class", "country")
+        .attr("transform", d => "translate(" + d.x + ',' + d.y + ")");
+
+    countries
+        .append("circle")
+        .attr("r", 5);
+
+    console.log(countries);
+
+
     //
     // const row = trials
     //     .enter()
@@ -125,6 +150,7 @@ const render = (data) => {
     //     .attr("cy", 0)
     //     .attr("r", (d) => d.duration / 10)
     //     .attr("fill", "red");
+
 
 
 
