@@ -31,7 +31,7 @@ const render = (data) => {
         .enter()
         .append('g') // creating "groups" as d3js usual "acting containers" has properties as "transform", etc...
         .attr("class", "country")
-        .attr("transform", d => "translate(" + d.x + ',' + d.y + ")"); // translate - linear transformation of movement
+        .attr("transform", d => "translate(" +d.x + ',' + d.y + ")"); // translate - linear transformation of movement
 
     countries
         .append("circle") // appending "inside" a groups in DOM tree
