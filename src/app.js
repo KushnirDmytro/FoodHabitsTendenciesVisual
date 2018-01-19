@@ -3,8 +3,44 @@ import * as d3 from "d3";
 const SVG_height = 800;
 const SVG_width = 1200;
 
-d3.csv("/data/pca coords/1990-1992.csv", (err, data) => {
-    console.log(data);
+
+let year_index = 0;
+
+const data_periods = [
+    "1990_1992",
+    "1993_1995",
+    "1996_1998",
+    "1999_2001",
+    "2002_2004",
+    "2005_2007",
+    "2008_2010",
+    "2011_2013",
+    "2014_2016"
+];
+
+const stupid_cluster_to_color = (cluster) => {
+    console.log(cluster);
+
+    switch (cluster){
+        case 1 : return 'red'
+        case 2 : return 'blue'
+        case 3 : return 'green'
+        case 4 : return 'magenta'
+        case 5 : return 'silver'
+        default: return 'yellow'
+    }
+};
+
+d3.csv("/data/pca coords/"+ data_periods[0] + ".csv", (err, data) => {
+
+
+    // coding with sideefects is bad...
+    let clusters = d3.csv("/data/clusters_PCA/Clusters"+ data_periods[0]  + ".csv",  (err, cluster_data) => {
+        data = data.map(d => {
+            d['cluster'] = cluster_data.filter(d_cl => d_cl.COUNTRY === d.country)[0].cluster; // appending with cluster notion
+            return d});
+    });
+
 
     //data structure tip
     const columnKeys = data.columns;
@@ -24,6 +60,7 @@ d3.csv("/data/pca coords/1990-1992.csv", (err, data) => {
 
 const render = (data) => {
 
+    console.log(data);
 
     // HELPER FUNCTIONS =================================
 
@@ -42,6 +79,21 @@ const render = (data) => {
         .select(document.body)
         .select('svg');
 
+    // svg.append("text").
+    const title = svg
+        .append("g")
+        .attr("class", "title")
+        .attr("transform", "translate(" + SVG_width/2 + "," + 20 +  ")" );
+
+    console.log(data_periods[year_index]);
+
+    title
+        .append("text")
+        .text(data_periods[year_index])
+        .attr("font-size", "25px")
+        .attr("font-weight", "bold");
+
+
 
     const countries = svg
         .selectAll(".country")
@@ -53,8 +105,12 @@ const render = (data) => {
 
     countries
         .append("circle")
-        .attr("r", 5);
-
+        .data(data)
+        .attr("r", 10)
+        .attr("color", d => {
+            console.log(d);
+            stupid_cluster_to_color(d.cluster)
+        });
 
 
     // background for text
@@ -64,7 +120,7 @@ const render = (data) => {
         .attr("height", 30)
         .attr("fill", 'yellow')
         .attr("opacity", 0.6)
-        .attr("transform", d => "translate(" + 0 + ',' +  -20 + ")") //placing as the text background
+        .attr("transform", "translate(" + 0 + ',' +  -20 + ")") //placing as the text background
         .attr('rx', 10)  // rounding edges
 
     countries
@@ -74,9 +130,7 @@ const render = (data) => {
         .attr("font-size", "20px");
 
 
-
     console.log(countries);
-
 
 
 };
