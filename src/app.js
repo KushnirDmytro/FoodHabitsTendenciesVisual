@@ -4,9 +4,9 @@ const SVG_height = 800;
 const SVG_width = 1200;
 
 
-let year_index = 0;
 
-const data_periods = [
+
+const DATA_PERIODS = [
     "1990_1992",
     "1993_1995",
     "1996_1998",
@@ -19,46 +19,59 @@ const data_periods = [
 ];
 
 const stupid_cluster_to_color = (cluster) => {
-    console.log(cluster);
+     console.log( cluster);
+
 
     switch (cluster){
-        case 1 : return 'red'
-        case 2 : return 'blue'
-        case 3 : return 'green'
-        case 4 : return 'magenta'
-        case 5 : return 'silver'
+        case '0' : return 'brown'
+        case '1' : return 'red'
+        case '2' : return 'blue'
+        case '3' : return 'green'
+        case '4' : return 'magenta'
+        case '5' : return 'silver'
         default: return 'yellow'
     }
 };
 
-d3.csv("/data/pca coords/"+ data_periods[0] + ".csv", (err, data) => {
+for (let per = 0; per < 2 ; per ++ ){
+    d3.csv("/data/pca coords/"+ DATA_PERIODS[per] + ".csv", (err, data) => {
+
+        // =========================================================================== PROBLEM BLOCK
+        // coding with sideefects is bad...
+        d3.csv("/data/clusters_PCA/Clusters"+ DATA_PERIODS[per]  + ".csv",  (err, cluster_data) => {
+            data = data.map(d => {
+                d['cluster'] = cluster_data.filter(d_cl => d_cl.COUNTRY === d.country)[0].cluster; // appending with cluster notion
+                return d});
+            console.log(data[0].cluster)
+        });
+
+        console.log(data[0].cluster); // TODO FIGURE OUT HOW TO LIVE WITH THIS?
+        // =========================================================================== PROBLEM BLOCK
 
 
-    // coding with sideefects is bad...
-    let clusters = d3.csv("/data/clusters_PCA/Clusters"+ data_periods[0]  + ".csv",  (err, cluster_data) => {
-        data = data.map(d => {
-            d['cluster'] = cluster_data.filter(d_cl => d_cl.COUNTRY === d.country)[0].cluster; // appending with cluster notion
-            return d});
+        //data structure tip
+        const columnKeys = data.columns;
+        console.log(columnKeys); //["country", "x", "y"]
+
+        // only firsy col data
+        let countyNames = data.map( d => d.country); // or d[columnKeys[0]]
+
+        console.log(countyNames);
+
+        if (per === 0) {
+            render(data, per);
+        }else{
+            setTimeout(render(data, per), 2000);
+        }
+
+
     });
-
-
-    //data structure tip
-    const columnKeys = data.columns;
-    console.log(columnKeys); //["country", "x", "y"]
-
-    // only firsy col data
-    let countyNames = data.map( d => d.country); // or d[columnKeys[0]]
-
-    console.log(countyNames);
-
-    render(data);
-
-});
+}
 
 
 
 
-const render = (data) => {
+const render = (data, currentDataPeriod) => {
 
     console.log(data);
 
@@ -85,11 +98,11 @@ const render = (data) => {
         .attr("class", "title")
         .attr("transform", "translate(" + SVG_width/2 + "," + 20 +  ")" );
 
-    console.log(data_periods[year_index]);
+    console.log(DATA_PERIODS[currentDataPeriod]);
 
     title
         .append("text")
-        .text(data_periods[year_index])
+        .text(DATA_PERIODS[currentDataPeriod])
         .attr("font-size", "25px")
         .attr("font-weight", "bold");
 
@@ -103,15 +116,19 @@ const render = (data) => {
         .attr("class", "country")
         .attr("transform", d => "translate(" +  scaleX(d.x)  + ',' +  scaleY(d.y)+ ")");
 
-    countries
-        .append("circle")
-        .data(data)
-        .attr("r", 10)
-        .attr("color", d => {
-            console.log(d);
-            stupid_cluster_to_color(d.cluster)
-        });
 
+
+    d3.csv("/data/clusters_PCA/Clusters"+ DATA_PERIODS[currentDataPeriod]  + ".csv",  (err, cluster_data) => {
+        data = data.map(d => {
+            d['cluster'] = cluster_data.filter(d_cl => d_cl.COUNTRY === d.country)[0].cluster; // appending with cluster notion
+            return d});
+        console.log(data[0].cluster)
+        countries
+            .append("circle")
+            .data(data)
+            .attr("r", 10)
+            .attr("fill", d => stupid_cluster_to_color(d.cluster) );
+    });
 
     // background for text
     countries
@@ -128,6 +145,7 @@ const render = (data) => {
         .data(data)
         .text(d => d.country)
         .attr("font-size", "20px");
+
 
 
     console.log(countries);
