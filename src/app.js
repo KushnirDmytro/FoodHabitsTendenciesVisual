@@ -19,8 +19,6 @@ const DATA_PERIODS = [
 ];
 
 const stupid_cluster_to_color = (cluster) => {
-     console.log( cluster);
-
 
     switch (cluster){
         case '0' : return 'brown'
@@ -73,8 +71,6 @@ for (let per = 0; per < 2 ; per ++ ){
 
 const render = (data, currentDataPeriod) => {
 
-    console.log(data);
-
     // HELPER FUNCTIONS =================================
 
     const scaleX = d3.scaleLinear()
@@ -92,63 +88,68 @@ const render = (data, currentDataPeriod) => {
         .select(document.body)
         .select('svg');
 
-    // svg.append("text").
-    const title = svg
-        .append("g")
-        .attr("class", "title")
-        .attr("transform", "translate(" + SVG_width/2 + "," + 20 +  ")" );
-
-    console.log(DATA_PERIODS[currentDataPeriod]);
-
-    title
-        .append("text")
-        .text(DATA_PERIODS[currentDataPeriod])
-        .attr("font-size", "25px")
-        .attr("font-weight", "bold");
+    if (currentDataPeriod === 0) { // first iteration
 
 
 
-    const countries = svg
-        .selectAll(".country")
-        .data(data)
-        .enter()
-        .append('g')
-        .attr("class", "country")
-        .attr("transform", d => "translate(" +  scaleX(d.x)  + ',' +  scaleY(d.y)+ ")");
+        const title = svg
+            .append("g")
+            .attr("class", "title")
+            .attr("transform", "translate(" + SVG_width/2 + "," + 20 +  ")" );
+
+        title
+            .append("text")
+            .text(DATA_PERIODS[currentDataPeriod])
+            .attr("font-size", "25px")
+            .attr("font-weight", "bold");
 
 
 
-    d3.csv("/data/clusters_PCA/Clusters"+ DATA_PERIODS[currentDataPeriod]  + ".csv",  (err, cluster_data) => {
-        data = data.map(d => {
-            d['cluster'] = cluster_data.filter(d_cl => d_cl.COUNTRY === d.country)[0].cluster; // appending with cluster notion
-            return d});
-        console.log(data[0].cluster)
-        countries
-            .append("circle")
+        const countries = svg
+            .selectAll(".country")
             .data(data)
-            .attr("r", 10)
-            .attr("fill", d => stupid_cluster_to_color(d.cluster) );
-    });
-
-    // background for text
-    countries
-        .append("rect")
-        .attr("width", 42)
-        .attr("height", 30)
-        .attr("fill", 'yellow')
-        .attr("opacity", 0.6)
-        .attr("transform", "translate(" + 0 + ',' +  -20 + ")") //placing as the text background
-        .attr('rx', 10)  // rounding edges
-
-    countries
-        .append("text")
-        .data(data)
-        .text(d => d.country)
-        .attr("font-size", "20px");
+            .enter()
+            .append('g')
+            .attr("class", "country")
+            .attr("transform", d => "translate(" +  scaleX(d.x)  + ',' +  scaleY(d.y)+ ")");
 
 
 
-    console.log(countries);
+        d3.csv("/data/clusters_PCA/Clusters"+ DATA_PERIODS[currentDataPeriod]  + ".csv",  (err, cluster_data) => {
+            data = data.map(d => {
+                d['cluster'] = cluster_data.filter(d_cl => d_cl.COUNTRY === d.country)[0].cluster; // appending with cluster notion
+                return d});
+            console.log(data[0].cluster)
+            countries
+                .append("circle")
+                .data(data)
+                .attr("r", 10)
+                .attr("fill", d => stupid_cluster_to_color(d.cluster) );
+        });
+
+        // background for text
+        countries
+            .append("rect")
+            .attr("width", 42)
+            .attr("height", 30)
+            .attr("fill", 'yellow')
+            .attr("opacity", 0.6)
+            .attr("transform", "translate(" + 0 + ',' +  -20 + ")") //placing as the text background
+            .attr('rx', 10)  // rounding edges
+
+        countries
+            .append("text")
+            .data(data)
+            .text(d => d.country)
+            .attr("font-size", "20px");
+    }
+    else { // shifting
+        let title = svg.select('.title');
+        console.log(title);
+        // title.text("HELLO");
+    }
+
+
 
 
 };
