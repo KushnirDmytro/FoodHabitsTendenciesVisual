@@ -99,6 +99,7 @@ const render = (data, currentDataPeriod) => {
 
         title
             .append("text")
+            .attr("class", "title_text")
             .text(DATA_PERIODS[currentDataPeriod])
             .attr("font-size", "25px")
             .attr("font-weight", "bold");
@@ -143,10 +144,26 @@ const render = (data, currentDataPeriod) => {
             .text(d => d.country)
             .attr("font-size", "20px");
     }
-    else { // shifting
+    else { // altering inner content of svg
+
         let title = svg.select('.title');
-        console.log(title);
-        // title.text("HELLO");
+        title
+            .select(".title_text")
+            .text(DATA_PERIODS[currentDataPeriod])
+            .attr("font-size", "25px")
+            .attr("font-weight", "bold");
+
+        let countries = svg
+            .selectAll(".country")
+            .data(data)
+            .enter()
+            .append('g')
+            .attr("class", "country")
+            .attr("class", "country")
+            .attr("transform", d => "translate(" +  scaleX(d.x)  + ',' +  scaleY(d.y)+ ")");
+
+
+        console.log(countries)
     }
 
 
