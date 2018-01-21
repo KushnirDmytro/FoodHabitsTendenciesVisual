@@ -137,7 +137,7 @@ const render = (data, currentDataPeriod) => {
             // console.log(data[0].cluster)
             countries
                 .append("circle")
-                .data(data)
+                .data(data) //TODO this part should be rendered in other way when not first execution but transition instead
                 .attr("r", 10)
                 .attr("fill", d => stupid_cluster_to_color(d.cluster) );
         });
