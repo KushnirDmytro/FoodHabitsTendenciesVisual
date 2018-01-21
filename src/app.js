@@ -4,7 +4,7 @@ const SVG_height = 800;
 const SVG_width = 1200;
 
 
-
+let current_data_period = 0;
 
 const DATA_PERIODS = [
     "1990_1992",
@@ -31,7 +31,9 @@ const stupid_cluster_to_color = (cluster) => {
     }
 };
 
-for (let per = 0; per < 2 ; per ++ ){
+function  update_data (per) {
+    console.log ("current data period " + DATA_PERIODS[per]);
+
     d3.csv("/data/pca coords/"+ DATA_PERIODS[per] + ".csv", (err, data) => {
 
         // =========================================================================== PROBLEM BLOCK
@@ -58,15 +60,28 @@ for (let per = 0; per < 2 ; per ++ ){
 
         if (per === 0) {
             render(data, per);
-        }else{
+        }else {
             setTimeout(render(data, per), 2000);
         }
 
 
     });
+
+
 }
+//
+// console.log(d3
+//     .select(document.body)
+//     .select('svg'));
 
+d3
+    .select(document.body)
+    .on("click", function () {
+    current_data_period++;
+    update_data(current_data_period);
+});
 
+update_data(current_data_period);
 
 
 const render = (data, currentDataPeriod) => {
@@ -83,14 +98,13 @@ const render = (data, currentDataPeriod) => {
 
     // HELPER FUNCTIONS =================================
 
-
     const svg = d3
         .select(document.body)
         .select('svg');
 
+
+
     if (currentDataPeriod === 0) { // first iteration
-
-
 
         const title = svg
             .append("g")
@@ -120,7 +134,7 @@ const render = (data, currentDataPeriod) => {
             data = data.map(d => {
                 d['cluster'] = cluster_data.filter(d_cl => d_cl.COUNTRY === d.country)[0].cluster; // appending with cluster notion
                 return d});
-            console.log(data[0].cluster)
+            // console.log(data[0].cluster)
             countries
                 .append("circle")
                 .data(data)
@@ -156,10 +170,11 @@ const render = (data, currentDataPeriod) => {
         let countries = svg
             .selectAll(".country")
             .data(data)
-            .enter()
-            .append('g')
-            .attr("class", "country")
-            .attr("class", "country")
+            // .enter()
+            // .append('g')
+            // .attr("class", "country")
+            .transition()
+            .duration(3000)
             .attr("transform", d => "translate(" +  scaleX(d.x)  + ',' +  scaleY(d.y)+ ")");
 
 
