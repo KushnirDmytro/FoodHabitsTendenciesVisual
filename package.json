@@ -12,7 +12,6 @@
   "dependencies": {
     "d3": "^4.12.2",
     "d3-geo": "^1.9.1",
-    "d3-geomap": "^1.0.2",
     "express-handlebars": "^3.0.0",
     "handlebars-loader": "^1.6.0",
     "handlebars.numeral": "^0.2.0",
