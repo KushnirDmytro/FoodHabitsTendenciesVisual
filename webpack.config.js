@@ -52,11 +52,9 @@ module.exports = {
             jQuery: "jquery"
         })
     ],
-    // resolve: {
-    //     alias: {
-    //         handlebars: 'handlebars/dist/handlebars.min.js'
-    //     }
-    // },
+    resolve: {
+        modules: ["node_modules"]
+    },
 
 //         rules: [
 //             {
