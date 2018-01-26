@@ -69,13 +69,8 @@ function  update_data (per) {
 
 
 }
-//
-// console.log(d3
-//     .select(document.body)
-//     .select('svg'));
 
-d3
-    .select(document.body)
+d3.select(document.body)
     .on("click", function () {
     current_data_period++;
     update_data(current_data_period);
