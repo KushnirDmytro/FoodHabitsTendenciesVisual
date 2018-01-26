@@ -1,100 +1,54 @@
 body {
     margin: 0;
-}
-
-ul {
-    list-style-type: none;
-    margin: 0;
     padding: 0;
-    width: 20%;
+}
+
+.tabs {
+    width: 100%;
     background-color: #f1f1f1;
-    position: fixed;
-    height: 100%;
-    overflow: hidden;
 }
 
-li a {
-    display: block;
-    color: #000;
-    padding: 8px 16px;
-    text-decoration: none;
+.tabs__tab {
+    float: left;
+    padding: 10px 30px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-li a.active {
-    background-color: darkgreen;
-    color: white;
+.tabs__tab-active {
+    background-color: #ccc;
 }
 
-li a:hover:not(.active) {
-    background-color: #555;
-    color: white;
+.tabs__tab:hover {
+    background-color: #ddd;
 }
 
-ul > img {
-    display: inline-block;
-    width: 40%;
-    height: 80px;
-    margin: 5% 0 0 5%;
-    /*margin-bottom: 10px;*/
-
+.tabs__years-nav {
+    float: right;
+    padding: 0 20px;
 }
 
-.stroke {
-    fill: none;
-    stroke: #000;
-    stroke-width: 3px;
+.tabs__year, .tabs__year-left, .tabs__year-right{
+    float: left;
+    padding: 10px 10px;
 }
 
-.fill {
-    fill: #fff;
-}
-
-.graticule {
-    fill: none;
-    stroke: #777;
-    stroke-width: .5px;
-    stroke-opacity: .5;
-}
-
-.land {
-    fill: #222;
-}
-
-.boundary {
-    fill: none;
-    stroke: #fff;
-    stroke-width: .5px;
-}
-
-script.piechart {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    margin: auto;
-    position: relative;
-    width: 960px;
-}
-
-text {
-    font: 10px sans-serif;
-}
-
-form {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-}
-
-td {
-    border: 1px #DDD solid;
-    padding: 5px;
+.tabs__year-left, .tabs__year-right{
     cursor: pointer;
 }
 
-.selected {
-    background-color: brown;
-    color: #FFF;
+
+
+.tabs__content{
+    clear: left;
+    background-color: white;
+    width: 100%;
+    border-top: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
 svg {
     display: block;
-    margin: 0 0 0 15%;
+    margin: 0 auto;
 }

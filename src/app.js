@@ -1,182 +1,103 @@
 import * as d3 from "d3";
-
-const SVG_height = 800;
-const SVG_width = 1200;
-
-
-let current_data_period = 0;
+import map from './map';
+import pca from './pca';
 
 const DATA_PERIODS = [
-    "1990_1992",
-    "1993_1995",
-    "1996_1998",
-    "1999_2001",
-    "2002_2004",
-    "2005_2007",
-    "2008_2010",
-    "2011_2013",
-    "2014_2016"
+    "1990-1992",
+    "1993-1995",
+    "1996-1998",
+    "1999-2001",
+    "2002-2004",
+    "2005-2007",
+    "2008-2010",
+    "2011-2013",
+    "2014-2016"
 ];
 
-const stupid_cluster_to_color = (cluster) => {
+let currentYear = 0;
+let currentTab = "Map";
 
-    switch (cluster){
-        case 0 : return 'brown';
-        case 1 : return 'red';
-        case 2 : return 'blue';
-        case 3 : return 'green';
-        case 4 : return 'magenta';
-        case 5 : return 'silver';
-        default: return 'yellow'
+function changeTab(event) {
+    let tabs = document.getElementsByClassName("tabs__tab");
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].className = tabs[i].className.replace("tabs__tab-active", "");
     }
-};
-
-function  update_data (per) {
-    console.log ("current data period " + DATA_PERIODS[per]);
-
-    d3.csv("/data/pca coords/"+ DATA_PERIODS[per] + ".csv", (err, data) => {
-        console.log("period" + per)
-        console.log(data);
-
-        d3.csv("/data/clusters_PCA/Clusters"+ DATA_PERIODS[per]  + ".csv",  (err, cluster_data) => {
-            console.log(cluster_data)
-            // as return from d3.csv works not good, using "nested" call instead
-
-            data = data.map(d => {
-
-                d['cluster'] = cluster_data
-                    .filter(d_cl => d_cl.COUNTRY === d.country)
-                    [0]
-                    .cluster; // appending with cluster notion
-
-                return {  // not obligatory, but to have easier control on types and names
-                    x: +d.x,
-                    y: +d.y,
-                    country: d.country,
-                    cluster: +d.cluster
-                }
-
-            });
-
-            // console.log(data[0].cluster/2);
-
-            if (per === 0) {
-                render(data, per);
-            }else {
-                setTimeout(render(data, per), 2000);
-            }
-
-        });
-        // console.log(data[0].cluster); // TODO FIGURE OUT HOW TO LIVE WITH THIS?
-        });
-
-
+    tabs_content.innerHTML = "";
+    if(event.currentTarget.innerHTML == "Map"){
+        map.initMap(DATA_PERIODS[currentYear]);
+        currentTab = "Map";
+    } else if (event.currentTarget.innerHTML == "PCA") {
+        pca.initPCA(DATA_PERIODS[currentYear]);
+        currentTab = "PCA";
+    }
+    event.currentTarget.classList.add("tabs__tab-active");
 }
 
-
-d3 // hanging update function here (other beahaviour You can change later instead of "CLICK" on  body element
-    .select(document.body)
-    .on("click", function () {
-    current_data_period++;
-    update_data(current_data_period);
-});
-
-update_data(current_data_period);
-
-
-const render = (data, currentDataPeriod) => {
-
-    // HELPER FUNCTIONS =================================
-
-    const scaleX = d3.scaleLinear()
-        .domain([-150, 250])
-        .range([  0, SVG_width]);
-
-    const scaleY = d3.scaleLinear()
-        .domain([-120, 150])
-        .range([SVG_height, 0]);
-
-    // HELPER FUNCTIONS =================================
-
-    const svg = d3
-        .select(document.body)
-        .select('svg');
-
-
-
-    if (currentDataPeriod === 0) { // first iteration
-
-        const title = svg
-            .append("g")
-            .attr("class", "title")
-            .attr("transform", "translate(" + SVG_width/2 + "," + 20 +  ")" );
-
-        title
-            .append("text")
-            .attr("class", "title_text")
-            .text(DATA_PERIODS[currentDataPeriod])
-            .attr("font-size", "25px")
-            .attr("font-weight", "bold");
-
-
-
-        const countries = svg
-            .selectAll(".country")
-            .data(data)
-            .enter()
-            .append('g')
-            .attr("class", "country")
-            .attr("transform", d => "translate(" +  scaleX(d.x)  + ',' +  scaleY(d.y)+ ")");
-
-
-        countries
-            .append("circle")
-                .data(data) //TODO this part should be rendered in other way when not first execution but transition instead
-                .attr("r", 10)
-                .attr("fill", d => stupid_cluster_to_color(d.cluster) );
-        // });
-
-
-        // background for text
-        countries
-            .append("rect")
-            .attr("width", 42)
-            .attr("height", 30)
-            .attr("fill", 'yellow')
-            .attr("opacity", 0.6)
-            .attr("transform", "translate(" + 0 + ',' +  -20 + ")") //placing as the text background
-            .attr('rx', 10)  // rounding edges
-
-        countries
-            .append("text")
-            .data(data)
-            .text(d => d.country)
-            .attr("font-size", "20px");
+function changeYear(event) {
+    if(event.currentTarget.classList.contains("tabs__year-left") && currentYear > 0){
+        currentYear--;
+    } else if (event.currentTarget.classList.contains("tabs__year-right")
+        && currentYear < DATA_PERIODS.length - 1) {
+        currentYear++;
     }
-    else { // altering inner content of svg
-
-        let title = svg.select('.title');
-        title
-            .select(".title_text")
-            .text(DATA_PERIODS[currentDataPeriod])
-            .attr("font-size", "25px")
-            .attr("font-weight", "bold");
-
-        let countries = svg
-            .selectAll(".country")
-            .data(data)
-            // .enter()
-            // .append('g')
-            // .attr("class", "country")
-            .transition()
-            .duration(3000)
-            .attr("transform", d => "translate(" +  scaleX(d.x)  + ',' +  scaleY(d.y)+ ")");
-
-
-        console.log(countries)
+    if(currentTab === "Map"){
+        map.drawMap(DATA_PERIODS[currentYear]);
+    } else if (currentTab === "PCA"){
+        pca.drawPCA(DATA_PERIODS[currentYear]);
     }
+    year.innerHTML = DATA_PERIODS[currentYear]
+}
 
+// create tabs container
 
+let tabs = document.createElement("div");
+tabs.classList.add("tabs");
+document.body.appendChild(tabs);
 
+// create add tabs
 
-};
+let map_tab = document.createElement("div");
+map_tab.classList.add("tabs__tab");
+map_tab.classList.add("tabs__tab-active");
+map_tab.innerHTML = "Map";
+tabs.appendChild(map_tab);
+map_tab.addEventListener("click", changeTab);
+
+let pca_tab = document.createElement("div");
+pca_tab.classList.add("tabs__tab");
+pca_tab.innerHTML = "PCA";
+pca_tab.addEventListener("click", changeTab);
+
+tabs.appendChild(pca_tab);
+
+// create add year menu
+
+let year_nav = document.createElement("div");
+year_nav.classList.add("tabs__years-nav");
+year_nav.innerHTML = "";
+tabs.appendChild(year_nav);
+
+let year_left = document.createElement("div");
+year_left.classList.add("tabs__year-left");
+year_left.innerHTML = "&lt;";
+year_left.addEventListener("click", changeYear);
+year_nav.appendChild(year_left);
+
+let year = document.createElement("div");
+year.classList.add("tabs__year");
+year.innerHTML = DATA_PERIODS[currentYear];
+year_nav.appendChild(year);
+
+let year_right = document.createElement("div");
+year_right.classList.add("tabs__year-right");
+year_right.innerHTML = "&gt;";
+year_right.addEventListener("click", changeYear);
+year_nav.appendChild(year_right);
+
+// add container for plots
+
+let tabs_content = document.createElement("div");
+tabs_content.classList.add("tabs__content");
+tabs.appendChild(tabs_content);
+
+map.initMap(DATA_PERIODS[currentYear]);
