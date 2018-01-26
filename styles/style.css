@@ -3,8 +3,14 @@ body {
     padding: 0;
 }
 
+svg {
+    display: block;
+    margin: 0 auto;
+}
+
 .tabs {
     width: 100%;
+    min-width: 960px;
     background-color: #f1f1f1;
 }
 
@@ -38,17 +44,10 @@ body {
     cursor: pointer;
 }
 
-
-
 .tabs__content{
     clear: left;
     background-color: white;
     width: 100%;
     border-top: 1px solid #ccc;
     box-sizing: border-box;
-}
-
-svg {
-    display: block;
-    margin: 0 auto;
 }
